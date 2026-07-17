@@ -1,7 +1,10 @@
 <template>
   <div class="login-page">
     <form class="card login-card" @submit.prevent="handleSubmit">
-      <h2>تسجيل الدخول - نظام ERP</h2>
+      <div class="brand">
+        <h1>نابولي للتطوير الصناعي</h1>
+        <p>نظام إدارة موارد المؤسسة</p>
+      </div>
       <p class="alert-error" v-if="error">{{ error }}</p>
 
       <label>اسم المستخدم</label>
@@ -12,9 +15,7 @@
 
       <button type="submit" :disabled="loading">{{ loading ? '...جاري الدخول' : 'دخول' }}</button>
 
-      <p class="hint">
-        حسابات تجريبية: admin / sales / storekeeper / production / accountant — كلمة المرور: password123
-      </p>
+      <p class="developer-credit">من تطوير esslam.dev</p>
     </form>
   </div>
 </template>
@@ -59,8 +60,19 @@ async function handleSubmit() {
   flex-direction: column;
   gap: 8px;
 }
-.hint {
+.brand {
+  margin-bottom: 12px;
+  text-align: center;
+}
+.brand h1 {
+  margin: 0;
+  font-size: 22px;
+}
+.brand p,
+.developer-credit {
+  margin: 6px 0 0;
   font-size: 12px;
   color: #6e7781;
+  text-align: center;
 }
 </style>
