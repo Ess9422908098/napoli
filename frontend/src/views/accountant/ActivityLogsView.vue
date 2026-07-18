@@ -102,6 +102,8 @@ const filteredLogs = computed(() => {
     const matchesFrom = !from || !logDate || logDate >= from
     const matchesTo = !to || !logDate || logDate <= to
     return matchesUser && matchesAction && matchesFrom && matchesTo
+  })
+})
 
 function applyFilters() {
   return filteredLogs.value
