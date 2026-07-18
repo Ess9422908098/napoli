@@ -28,6 +28,7 @@
           <th>اسم المستخدم</th>
           <th>الدور</th>
           <th>مفعل</th>
+          <th>الإجراءات</th>
         </tr>
       </thead>
       <tbody>
@@ -36,6 +37,12 @@
           <td>{{ user.username }}</td>
           <td>{{ user.role.name }}</td>
           <td>{{ user.is_active ? 'نعم' : 'لا' }}</td>
+          <td>
+            <button class="secondary" @click="toggleActive(user)" :disabled="loading">
+              {{ user.is_active ? 'إلغاء التفعيل' : 'تفعيل' }}
+            </button>
+            <button class="danger" @click="deleteUser(user)" :disabled="loading">حذف</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -68,6 +75,38 @@ async function createUser() {
     await http.post('/users', form.value)
     success.value = 'تم إنشاء المستخدم بنجاح.'
     form.value = { name: '', username: '', email: '', password: '', role_id: null }
+    await loadData()
+  } catch (e) {
+    error.value = e.response?.data?.message || 'حدث خطأ.'
+  } finally {
+    loading.value = false
+  }
+}
+
+async function toggleActive(user) {
+  error.value = ''
+  success.value = ''
+  loading.value = true
+  try {
+    await http.put(`/users/${user.id}`, { is_active: !user.is_active })
+    success.value = user.is_active ? 'تم إلغاء تفعيل المستخدم.' : 'تم تفعيل المستخدم.'
+    await loadData()
+  } catch (e) {
+    error.value = e.response?.data?.message || 'حدث خطأ.'
+  } finally {
+    loading.value = false
+  }
+}
+
+async function deleteUser(user) {
+  if (!window.confirm('هل تريد حذف هذا المستخدم؟')) return
+
+  error.value = ''
+  success.value = ''
+  loading.value = true
+  try {
+    await http.delete(`/users/${user.id}`)
+    success.value = 'تم حذف المستخدم بنجاح.'
     await loadData()
   } catch (e) {
     error.value = e.response?.data?.message || 'حدث خطأ.'
