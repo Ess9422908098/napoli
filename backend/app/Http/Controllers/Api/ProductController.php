@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Product;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -76,9 +77,15 @@ class ProductController extends Controller
         return $product;
     }
 
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
-        $product->delete();
+        try {
+            $product->delete();
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => 'لا يمكن حذف المنتج لأنه مرتبط بحركات أو أوامر أخرى.'
+            ], 400);
+        }
 
         ActivityLog::create([
             'user_id' => $request->user()?->id,
