@@ -5,7 +5,8 @@
     <div v-if="invoice">
       <div class="card invoice-header">
         <div>
-          <h2>فاتورة رقم {{ invoice.invoice_number }}</h2>
+          <h2>{{ companyName }}</h2>
+          <h3>فاتورة رقم {{ invoice.invoice_number }}</h3>
           <p>العميل: {{ invoice.customer?.name || '—' }}</p>
           <p>حالة الفاتورة: {{ statusLabel(invoice.status) }}</p>
           <p>حالة الاعتماد: {{ approvalLabel(invoice.approval_status) }}</p>
@@ -48,6 +49,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import http from '../../api/http'
 
+const companyName = import.meta.env.VITE_COMPANY_NAME || 'اسم الشركة'
 const route = useRoute()
 const invoice = ref(null)
 const error = ref('')

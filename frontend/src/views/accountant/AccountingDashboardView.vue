@@ -39,7 +39,7 @@
         <div class="links">
           <router-link to="/accounting/journal">القيود المحاسبية</router-link>
           <router-link to="/accounting/trial-balance">ميزان المراجعة</router-link>
-          <router-link to="/accounting/activity-logs">سجل النشاط والتعديلات</router-link>
+          <router-link to="/admin/activity-logs">سجل النظام</router-link>
         </div>
       </section>
     </div>

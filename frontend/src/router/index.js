@@ -103,8 +103,8 @@ const routes = [
         meta: { permission: 'accounting.view' },
       },
       {
-        path: 'accounting/invoice-approvals',
-        name: 'accounting-invoice-approvals',
+        path: 'accounting/invoices',
+        name: 'accounting-invoices',
         component: () => import('../views/accountant/InvoiceApprovalsView.vue'),
         meta: { permission: 'invoices.approve' },
       },
@@ -139,10 +139,10 @@ const routes = [
         meta: { permission: 'accounting.view' },
       },
       {
-        path: 'accounting/activity-logs',
-        name: 'accounting-activity-logs',
+        path: 'admin/activity-logs',
+        name: 'admin-activity-logs',
         component: () => import('../views/accountant/ActivityLogsView.vue'),
-        meta: { permission: 'accounting.audit' },
+        meta: { role: 'admin' },
       },
 
       // Admin

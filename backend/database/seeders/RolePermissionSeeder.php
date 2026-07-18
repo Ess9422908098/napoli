@@ -65,8 +65,8 @@ class RolePermissionSeeder extends Seeder
             [
                 'slug' => Role::ACCOUNTANT,
                 'name' => 'المحاسب',
-                'description' => 'رؤية القيود المالية الناتجة تلقائياً عن المبيعات والمشتريات والتصنيع والرواتب.',
-                'permissions' => ['accounting.view', 'accounting.audit', 'payroll.manage', 'stock.view_readonly', 'products.manage', 'invoices.approve', 'invoices.view'],
+                'description' => 'رؤية القيود المالية الناتجة تلقائياً عن المبيعات والمشتريات والتصنيع والرواتب، مع وصول إلى المخزون عند الحاجة.',
+                'permissions' => ['accounting.view', 'payroll.manage', 'stock.view_readonly', 'stock.manage', 'products.manage', 'invoices.approve', 'invoices.view'],
             ],
         ];
 
