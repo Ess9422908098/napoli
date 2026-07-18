@@ -42,7 +42,7 @@ class ReceivablesController extends Controller
 
         $rows = $suppliers->map(function ($supplier) {
             $total = (float) $supplier->purchaseOrders->sum('total_amount');
-            $paid = 0;
+            $paid = (float) $supplier->purchaseOrders->sum('paid_amount');
             $balance = $total - $paid;
 
             return [
@@ -50,6 +50,7 @@ class ReceivablesController extends Controller
                 'name' => $supplier->name,
                 'phone' => $supplier->phone,
                 'total_purchased' => $total,
+                'paid_amount' => $paid,
                 'balance' => $balance,
             ];
         });
@@ -84,6 +85,9 @@ class ReceivablesController extends Controller
                 'order_number' => $order->order_number,
                 'status' => $order->status,
                 'total_amount' => (float) $order->total_amount,
+                'paid_amount' => (float) $order->paid_amount,
+                'payment_status' => $order->payment_status,
+                'remaining_amount' => (float) $order->total_amount - (float) $order->paid_amount,
                 'created_at' => $order->created_at?->toDateString(),
             ]),
         ]);

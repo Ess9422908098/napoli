@@ -18,6 +18,7 @@ class PurchaseOrderController extends Controller
         return PurchaseOrder::query()
             ->with(['items.product', 'supplier', 'warehouse'])
             ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
+            ->when($request->query('payment_status'), fn ($q, $paymentStatus) => $q->where('payment_status', $paymentStatus))
             ->orderByDesc('created_at')
             ->paginate(30);
     }
@@ -47,5 +48,14 @@ class PurchaseOrderController extends Controller
     public function receive(Request $request, PurchaseOrder $purchaseOrder)
     {
         return response()->json($this->purchaseService->receiveOrder($purchaseOrder, $request->user()));
+    }
+
+    public function pay(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        $data = $request->validate([
+            'amount' => ['required', 'numeric', 'min:0.01'],
+        ]);
+
+        return response()->json($this->purchaseService->recordPayment($purchaseOrder, (float) $data['amount'], $request->user()));
     }
 }

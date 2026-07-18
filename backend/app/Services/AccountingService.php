@@ -108,6 +108,20 @@ class AccountingService
         );
     }
 
+    public function postPurchasePayment(string $orderNumber, int $orderId, float $amount, ?User $actor): JournalEntry
+    {
+        return $this->postEntry(
+            "سداد فاتورة شراء رقم {$orderNumber}",
+            [
+                ['account_code' => Account::ACCOUNTS_PAYABLE, 'debit' => $amount],
+                ['account_code' => Account::CASH, 'credit' => $amount],
+            ],
+            referenceType: 'purchase_order',
+            referenceId: $orderId,
+            actor: $actor,
+        );
+    }
+
     public function postProductionCompletion(string $orderNumber, int $orderId, float $rawMaterialCost, ?User $actor): ?JournalEntry
     {
         if ($rawMaterialCost <= 0) {

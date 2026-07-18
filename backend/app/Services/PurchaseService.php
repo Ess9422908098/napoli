@@ -32,7 +32,9 @@ class PurchaseService
                 'order_number' => 'PUR-'.now()->format('Ymd').'-'.Str::upper(Str::random(6)),
                 'supplier_id' => $supplierId,
                 'warehouse_id' => $warehouseId,
-                'status' => PurchaseOrder::DRAFT,
+                'status' => PurchaseOrder::SUBMITTED,
+                'payment_status' => PurchaseOrder::PAYMENT_PENDING,
+                'paid_amount' => 0,
                 'created_by' => $actor?->id,
                 'total_amount' => $total,
                 'order_date' => now(),
@@ -77,6 +79,35 @@ class PurchaseService
             $order->update(['status' => PurchaseOrder::RECEIVED, 'received_at' => now()]);
 
             $this->accounting->postPurchase($order->order_number, $order->id, (float) $order->total_amount, $storekeeper);
+
+            return $order->fresh(['items.product', 'supplier', 'warehouse']);
+        });
+    }
+
+    public function recordPayment(PurchaseOrder $order, float $amount, User $accountant): PurchaseOrder
+    {
+        if ($order->status !== PurchaseOrder::RECEIVED) {
+            throw new \RuntimeException('لا يمكن تسجيل الدفع قبل استلام المواد.');
+        }
+
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException('يجب أن تكون قيمة الدفع أكبر من صفر.');
+        }
+
+        $outstanding = (float) $order->total_amount - (float) $order->paid_amount;
+        if ($amount > $outstanding) {
+            throw new \InvalidArgumentException('مبلغ الدفع أكبر من الرصيد المتبقي.');
+        }
+
+        return DB::transaction(function () use ($order, $amount, $accountant, $outstanding) {
+            $newPaid = (float) $order->paid_amount + $amount;
+            $order->update([
+                'paid_amount' => $newPaid,
+                'payment_status' => $newPaid >= (float) $order->total_amount ? PurchaseOrder::PAYMENT_PAID : PurchaseOrder::PAYMENT_PARTIAL,
+                'paid_at' => now(),
+            ]);
+
+            $this->accounting->postPurchasePayment($order->order_number, $order->id, $amount, $accountant);
 
             return $order->fresh(['items.product', 'supplier', 'warehouse']);
         });

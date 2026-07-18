@@ -115,6 +115,12 @@ const routes = [
         meta: { permission: 'accounting.view' },
       },
       {
+        path: 'accounting/purchase-orders',
+        name: 'accounting-purchase-orders',
+        component: () => import('../views/accountant/PurchaseOrdersView.vue'),
+        meta: { permission: 'purchases.manage' },
+      },
+      {
         path: 'accounting/reports',
         name: 'accounting-reports',
         component: () => import('../views/accountant/FinancialReportsView.vue'),

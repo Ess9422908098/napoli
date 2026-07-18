@@ -122,6 +122,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('permission:purchases.manage')->group(function () {
         Route::get('purchase-orders', [PurchaseOrderController::class, 'index']);
         Route::post('purchase-orders', [PurchaseOrderController::class, 'store']);
+        Route::patch('purchase-orders/{purchaseOrder}/pay', [PurchaseOrderController::class, 'pay']);
     });
 
     // ---------------------------------------------------------------

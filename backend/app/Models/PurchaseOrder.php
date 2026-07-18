@@ -16,15 +16,27 @@ class PurchaseOrder extends Model
     public const RECEIVED = 'received';
     public const CANCELLED = 'cancelled';
 
+    public const PAYMENT_PENDING = 'pending';
+    public const PAYMENT_PARTIAL = 'partial';
+    public const PAYMENT_PAID = 'paid';
+
     protected $fillable = [
         'order_number', 'supplier_id', 'warehouse_id', 'status',
         'created_by', 'total_amount', 'order_date', 'received_at',
+        'payment_status', 'paid_amount', 'paid_at',
     ];
 
     protected $casts = [
         'total_amount' => 'decimal:2',
         'order_date' => 'datetime',
         'received_at' => 'datetime',
+        'paid_amount' => 'decimal:2',
+        'paid_at' => 'datetime',
+    ];
+
+    protected $attributes = [
+        'payment_status' => self::PAYMENT_PENDING,
+        'paid_amount' => 0,
     ];
 
     public function supplier(): BelongsTo

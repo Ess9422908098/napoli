@@ -37,6 +37,7 @@
         <h4>الحسابات</h4>
         <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting">لوحة المحاسب</router-link>
         <router-link v-if="auth.hasPermission('invoices.approve')" to="/accounting/invoices">فواتير المحاسب</router-link>
+        <router-link v-if="auth.hasPermission('purchases.manage')" to="/accounting/purchase-orders">أوامر الشراء</router-link>
         <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/reports">التقارير المالية</router-link>
         <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/receivables">الذمم المدينة والدائنة</router-link>
         <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/automation">الأتمتة التشغيلية</router-link>
