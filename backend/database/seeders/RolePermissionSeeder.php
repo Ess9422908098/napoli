@@ -28,6 +28,7 @@ class RolePermissionSeeder extends Seeder
             ['slug' => 'production.view_raw_stock', 'name' => 'عرض مخزون المواد الخام', 'module' => 'production'],
 
             ['slug' => 'accounting.view', 'name' => 'عرض القيود المحاسبية', 'module' => 'accounting'],
+            ['slug' => 'accounting.audit', 'name' => 'عرض سجل النشاط والتعديلات', 'module' => 'accounting'],
             ['slug' => 'payroll.manage', 'name' => 'إدارة الرواتب', 'module' => 'accounting'],
         ];
 
@@ -64,7 +65,7 @@ class RolePermissionSeeder extends Seeder
                 'slug' => Role::ACCOUNTANT,
                 'name' => 'المحاسب',
                 'description' => 'رؤية القيود المالية الناتجة تلقائياً عن المبيعات والمشتريات والتصنيع والرواتب.',
-                'permissions' => ['accounting.view', 'payroll.manage'],
+                'permissions' => ['accounting.view', 'accounting.audit', 'payroll.manage', 'stock.view_readonly', 'products.manage'],
             ],
         ];
 

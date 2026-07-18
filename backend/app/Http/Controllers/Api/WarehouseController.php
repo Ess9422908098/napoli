@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\ProductStock;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
@@ -23,7 +24,18 @@ class WarehouseController extends Controller
             'type' => ['required', Rule::in([Warehouse::RAW_MATERIALS, Warehouse::WIP, Warehouse::FINISHED_GOODS])],
         ]);
 
-        return response()->json(Warehouse::create($data), 201);
+        $warehouse = Warehouse::create($data);
+
+        ActivityLog::create([
+            'user_id' => $request->user()?->id,
+            'action' => 'created',
+            'subject_type' => Warehouse::class,
+            'subject_id' => $warehouse->id,
+            'subject_name' => $warehouse->name,
+            'description' => 'تم إضافة مخزن جديد',
+        ]);
+
+        return response()->json($warehouse, 201);
     }
 
     public function update(Request $request, Warehouse $warehouse)
@@ -35,6 +47,15 @@ class WarehouseController extends Controller
         ]);
 
         $warehouse->update($data);
+
+        ActivityLog::create([
+            'user_id' => $request->user()?->id,
+            'action' => 'updated',
+            'subject_type' => Warehouse::class,
+            'subject_id' => $warehouse->id,
+            'subject_name' => $warehouse->name,
+            'description' => 'تم تعديل المخزن',
+        ]);
 
         return $warehouse;
     }

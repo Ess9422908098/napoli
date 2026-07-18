@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\StockMovement;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
@@ -51,6 +52,16 @@ class StockController extends Controller
             actor: $request->user(),
         );
 
+        ActivityLog::create([
+            'user_id' => $request->user()?->id,
+            'action' => 'stock_received',
+            'subject_type' => StockMovement::class,
+            'subject_id' => $movement->id,
+            'subject_name' => $movement->product?->name,
+            'description' => 'تم تسجيل وارد للمخزن',
+            'meta' => ['warehouse_id' => $data['warehouse_id'], 'quantity' => $data['quantity']],
+        ]);
+
         return response()->json($movement, 201);
     }
 
@@ -75,6 +86,16 @@ class StockController extends Controller
             actor: $request->user(),
         );
 
+        ActivityLog::create([
+            'user_id' => $request->user()?->id,
+            'action' => 'stock_issued',
+            'subject_type' => StockMovement::class,
+            'subject_id' => $movement->id,
+            'subject_name' => $movement->product?->name,
+            'description' => 'تم تسجيل صادر من المخزن',
+            'meta' => ['warehouse_id' => $data['warehouse_id'], 'quantity' => $data['quantity']],
+        ]);
+
         return response()->json($movement, 201);
     }
 
@@ -96,6 +117,16 @@ class StockController extends Controller
             notes: $data['notes'] ?? null,
             actor: $request->user(),
         );
+
+        ActivityLog::create([
+            'user_id' => $request->user()?->id,
+            'action' => 'stock_counted',
+            'subject_type' => StockMovement::class,
+            'subject_id' => $movement->id,
+            'subject_name' => $movement->product?->name,
+            'description' => 'تم تعديل الجرد أو الكمية الفعلية',
+            'meta' => ['warehouse_id' => $data['warehouse_id'], 'counted_quantity' => $data['counted_quantity']],
+        ]);
 
         return response()->json($movement, 201);
     }

@@ -20,6 +20,7 @@
 
       <template v-if="auth.hasPermission('stock.manage')">
         <h4>أمين المخزن</h4>
+        <router-link to="/storekeeper/products">عرض وإدارة المنتجات</router-link>
         <router-link to="/storekeeper/fulfill">تجهيز الفواتير</router-link>
         <router-link to="/storekeeper/receive">تسجيل وارد</router-link>
         <router-link to="/storekeeper/issue">تسجيل صادر</router-link>
@@ -32,10 +33,15 @@
         <router-link to="/production/orders">أوامر التصنيع</router-link>
       </template>
 
-      <template v-if="auth.hasPermission('accounting.view')">
+      <template v-if="auth.hasPermission('accounting.view') || auth.hasPermission('accounting.audit')">
         <h4>الحسابات</h4>
-        <router-link to="/accounting/journal">القيود المحاسبية</router-link>
-        <router-link to="/accounting/trial-balance">ميزان المراجعة</router-link>
+        <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting">لوحة المحاسب</router-link>
+        <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/reports">التقارير المالية</router-link>
+        <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/receivables">الذمم المدينة والدائنة</router-link>
+        <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/automation">الأتمتة التشغيلية</router-link>
+        <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/journal">القيود المحاسبية</router-link>
+        <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/trial-balance">ميزان المراجعة</router-link>
+        <router-link v-if="auth.hasPermission('accounting.audit')" to="/accounting/activity-logs">سجل النشاط والتعديلات</router-link>
       </template>
 
       <template v-if="auth.hasRole('admin')">

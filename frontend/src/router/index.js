@@ -63,6 +63,12 @@ const routes = [
         meta: { permission: 'stock.manage' },
       },
       {
+        path: 'storekeeper/products',
+        name: 'storekeeper-products',
+        component: () => import('../views/admin/ProductsView.vue'),
+        meta: { anyPermission: ['stock.manage', 'products.manage'] },
+      },
+      {
         path: 'storekeeper/fulfill',
         name: 'storekeeper-fulfill',
         component: () => import('../views/storekeeper/FulfillInvoicesView.vue'),
@@ -85,9 +91,33 @@ const routes = [
 
       // Accounting
       {
+        path: 'accounting',
+        name: 'accounting-dashboard',
+        component: () => import('../views/accountant/AccountingDashboardView.vue'),
+        meta: { permission: 'accounting.view' },
+      },
+      {
         path: 'accounting/journal',
         name: 'accounting-journal',
         component: () => import('../views/accountant/JournalEntriesView.vue'),
+        meta: { permission: 'accounting.view' },
+      },
+      {
+        path: 'accounting/reports',
+        name: 'accounting-reports',
+        component: () => import('../views/accountant/FinancialReportsView.vue'),
+        meta: { permission: 'accounting.view' },
+      },
+      {
+        path: 'accounting/receivables',
+        name: 'accounting-receivables',
+        component: () => import('../views/accountant/ReceivablesView.vue'),
+        meta: { permission: 'accounting.view' },
+      },
+      {
+        path: 'accounting/automation',
+        name: 'accounting-automation',
+        component: () => import('../views/accountant/AutomationView.vue'),
         meta: { permission: 'accounting.view' },
       },
       {
@@ -95,6 +125,12 @@ const routes = [
         name: 'accounting-trial-balance',
         component: () => import('../views/accountant/TrialBalanceView.vue'),
         meta: { permission: 'accounting.view' },
+      },
+      {
+        path: 'accounting/activity-logs',
+        name: 'accounting-activity-logs',
+        component: () => import('../views/accountant/ActivityLogsView.vue'),
+        meta: { permission: 'accounting.audit' },
       },
 
       // Admin

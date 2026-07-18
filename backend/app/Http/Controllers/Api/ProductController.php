@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -31,7 +32,19 @@ class ProductController extends Controller
             'reorder_level' => ['nullable', 'numeric', 'min:0'],
         ]);
 
-        return response()->json(Product::create($data), 201);
+        $product = Product::create($data);
+
+        ActivityLog::create([
+            'user_id' => $request->user()?->id,
+            'action' => 'created',
+            'subject_type' => Product::class,
+            'subject_id' => $product->id,
+            'subject_name' => $product->name,
+            'description' => 'تم إضافة منتج جديد',
+            'meta' => ['sku' => $product->sku],
+        ]);
+
+        return response()->json($product, 201);
     }
 
     public function update(Request $request, Product $product)
@@ -40,6 +53,7 @@ class ProductController extends Controller
             'sku' => ['sometimes', 'string', 'max:50', Rule::unique('products', 'sku')->ignore($product->id)],
             'name' => ['sometimes', 'string', 'max:150'],
             'barcode' => ['nullable', 'string', 'max:50', Rule::unique('products', 'barcode')->ignore($product->id)],
+            'type' => ['sometimes', Rule::in([Product::RAW_MATERIAL, Product::FINISHED_GOOD])],
             'unit' => ['sometimes', 'string', 'max:20'],
             'cost_price' => ['sometimes', 'numeric', 'min:0'],
             'selling_price' => ['sometimes', 'numeric', 'min:0'],
@@ -49,12 +63,31 @@ class ProductController extends Controller
 
         $product->update($data);
 
+        ActivityLog::create([
+            'user_id' => $request->user()?->id,
+            'action' => 'updated',
+            'subject_type' => Product::class,
+            'subject_id' => $product->id,
+            'subject_name' => $product->name,
+            'description' => 'تم تعديل المنتج',
+            'meta' => ['sku' => $product->sku],
+        ]);
+
         return $product;
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
+
+        ActivityLog::create([
+            'user_id' => $request->user()?->id,
+            'action' => 'deleted',
+            'subject_type' => Product::class,
+            'subject_id' => $product->id,
+            'subject_name' => $product->name,
+            'description' => 'تم حذف المنتج',
+        ]);
 
         return response()->json(['message' => 'تم حذف المنتج.']);
     }

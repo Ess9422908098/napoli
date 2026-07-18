@@ -1,12 +1,19 @@
 <?php
 
+use App\Http\Controllers\Api\AccountingDashboardController;
+use App\Http\Controllers\Api\ActivityLogController;
+use App\Http\Controllers\Api\AutomationController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\FinancialReportController;
 use App\Http\Controllers\Api\JournalEntryController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\OperationsController;
 use App\Http\Controllers\Api\PayrollController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductionOrderController;
+use App\Http\Controllers\Api\ReceivablesController;
 use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\SalesInvoiceController;
 use App\Http\Controllers\Api\StockController;
@@ -34,6 +41,17 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/operations', [OperationsController::class, 'index']);
+    Route::get('/accounting/dashboard', [AccountingDashboardController::class, 'index']);
+    Route::get('/automation/health', [AutomationController::class, 'health']);
+    Route::get('/financial-reports/monthly', [FinancialReportController::class, 'monthly']);
+    Route::get('/financial-reports/summary', [FinancialReportController::class, 'summary']);
+    Route::get('/financial-reports/alerts', [FinancialReportController::class, 'alerts']);
+    Route::get('/receivables/customers', [ReceivablesController::class, 'customers']);
+    Route::get('/receivables/suppliers', [ReceivablesController::class, 'suppliers']);
+    Route::get('/receivables/customers/{customer}', [ReceivablesController::class, 'customerStatement']);
+    Route::get('/receivables/suppliers/{supplier}', [ReceivablesController::class, 'supplierStatement']);
 
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead']);
@@ -47,7 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('roles', [UserController::class, 'roles']);
     });
 
-    Route::middleware('permission:products.manage')->group(function () {
+    Route::middleware('permission:products.manage,stock.manage')->group(function () {
         Route::post('products', [ProductController::class, 'store']);
         Route::put('products/{product}', [ProductController::class, 'update']);
         Route::delete('products/{product}', [ProductController::class, 'destroy']);
@@ -126,6 +144,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('accounts', [JournalEntryController::class, 'accounts']);
         Route::get('accounts/trial-balance', [JournalEntryController::class, 'trialBalance']);
         Route::get('payrolls', [PayrollController::class, 'index']);
+    });
+
+    Route::middleware('permission:accounting.audit')->group(function () {
+        Route::get('activity-logs', [ActivityLogController::class, 'index']);
     });
 
     Route::middleware('permission:payroll.manage')->group(function () {
