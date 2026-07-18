@@ -63,6 +63,7 @@ class SalesService
                 'customer_id' => $customerId,
                 'created_by' => $salesUser->id,
                 'status' => SalesInvoice::PENDING_FULFILLMENT,
+                'approval_status' => SalesInvoice::PENDING_APPROVAL,
                 'total_amount' => $totalAmount,
                 'notes' => $notes,
             ]);
@@ -84,21 +85,38 @@ class SalesService
                 ]);
             }
 
-            // Step 3: revenue is recognized immediately; COGS is posted at fulfillment time.
-            $this->accounting->postSalesRevenue($invoice->invoice_number, $invoice->id, $totalAmount, $salesUser);
-
-            // Step 4: automatically notify the storekeeper role to prepare the order.
-            $this->notifications->notifyStorekeepersOfNewInvoice($invoice->invoice_number, $invoice->id);
+            // Step 3: invoice request is sent to the accountant for approval.
+            $this->notifications->notifyAccountantsOfPendingInvoice($invoice->invoice_number, $invoice->id);
 
             return $invoice->load('items.product', 'items.warehouse', 'customer');
         });
     }
 
     /** Storekeeper action: physically ships the reserved items and closes the invoice. */
+    public function approveInvoice(SalesInvoice $invoice, User $accountant): SalesInvoice
+    {
+        if ($invoice->status !== SalesInvoice::PENDING_FULFILLMENT || $invoice->approval_status !== 'pending') {
+            throw new \RuntimeException('الفاتورة غير مؤهلة للاعتماد أو تمت معالجتها بالفعل.');
+        }
+
+        return DB::transaction(function () use ($invoice, $accountant) {
+            $invoice->update([
+                'approval_status' => 'approved',
+                'approved_at' => now(),
+                'approved_by' => $accountant->id,
+            ]);
+
+            $this->accounting->postSalesRevenue($invoice->invoice_number, $invoice->id, (float) $invoice->total_amount, $accountant);
+            $this->notifications->notifyStorekeepersOfApprovedInvoice($invoice->invoice_number, $invoice->id);
+
+            return $invoice->fresh(['items.product', 'items.warehouse', 'customer', 'creator', 'approver']);
+        });
+    }
+
     public function fulfillInvoice(SalesInvoice $invoice, User $storekeeper): SalesInvoice
     {
-        if ($invoice->status !== SalesInvoice::PENDING_FULFILLMENT) {
-            throw new \RuntimeException('الفاتورة تم تجهيزها أو إلغاؤها بالفعل.');
+        if ($invoice->status !== SalesInvoice::PENDING_FULFILLMENT || $invoice->approval_status !== SalesInvoice::APPROVED) {
+            throw new \RuntimeException('يجب اعتماد الفاتورة من المحاسب قبل التجهيز.');
         }
 
         return DB::transaction(function () use ($invoice, $storekeeper) {

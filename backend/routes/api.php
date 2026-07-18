@@ -97,6 +97,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('sales-invoices', [SalesInvoiceController::class, 'index']);
         Route::get('sales-invoices/{salesInvoice}', [SalesInvoiceController::class, 'show']);
     });
+    Route::middleware('permission:invoices.approve')->post('sales-invoices/{salesInvoice}/approve', [SalesInvoiceController::class, 'approve']);
     Route::middleware('permission:invoices.cancel')->post('sales-invoices/{salesInvoice}/cancel', [SalesInvoiceController::class, 'cancel']);
 
     Route::middleware('permission:stock.view_readonly,stock.manage,production.view_raw_stock')

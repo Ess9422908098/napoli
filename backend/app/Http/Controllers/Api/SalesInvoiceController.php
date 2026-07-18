@@ -16,15 +16,16 @@ class SalesInvoiceController extends Controller
     public function index(Request $request)
     {
         return SalesInvoice::query()
-            ->with(['items.product', 'items.warehouse', 'customer', 'creator'])
+            ->with(['items.product', 'items.warehouse', 'customer', 'creator', 'approver'])
             ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
+            ->when($request->query('approval_status'), fn ($q, $approvalStatus) => $q->where('approval_status', $approvalStatus))
             ->orderByDesc('created_at')
             ->paginate(30);
     }
 
     public function show(SalesInvoice $salesInvoice)
     {
-        return $salesInvoice->load(['items.product', 'items.warehouse', 'customer', 'creator', 'fulfiller']);
+        return $salesInvoice->load(['items.product', 'items.warehouse', 'customer', 'creator', 'fulfiller', 'approver']);
     }
 
     public function store(Request $request)
@@ -50,6 +51,13 @@ class SalesInvoiceController extends Controller
     }
 
     /** Storekeeper action: prepares and ships the reserved items. */
+    public function approve(Request $request, SalesInvoice $salesInvoice)
+    {
+        $invoice = $this->salesService->approveInvoice($salesInvoice, $request->user());
+
+        return response()->json($invoice);
+    }
+
     public function fulfill(Request $request, SalesInvoice $salesInvoice)
     {
         $invoice = $this->salesService->fulfillInvoice($salesInvoice, $request->user());

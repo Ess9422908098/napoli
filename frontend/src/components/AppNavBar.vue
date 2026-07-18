@@ -36,6 +36,7 @@
       <template v-if="auth.hasPermission('accounting.view') || auth.hasPermission('accounting.audit')">
         <h4>الحسابات</h4>
         <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting">لوحة المحاسب</router-link>
+        <router-link v-if="auth.hasPermission('invoices.approve')" to="/accounting/invoice-approvals">طلبات اعتمادات الفواتير</router-link>
         <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/reports">التقارير المالية</router-link>
         <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/receivables">الذمم المدينة والدائنة</router-link>
         <router-link v-if="auth.hasPermission('accounting.view')" to="/accounting/automation">الأتمتة التشغيلية</router-link>

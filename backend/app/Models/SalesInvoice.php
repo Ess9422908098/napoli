@@ -15,14 +15,20 @@ class SalesInvoice extends Model
     public const FULFILLED = 'fulfilled';
     public const CANCELLED = 'cancelled';
 
+    public const PENDING_APPROVAL = 'pending';
+    public const APPROVED = 'approved';
+    public const REJECTED = 'rejected';
+
     protected $fillable = [
         'invoice_number', 'customer_id', 'created_by', 'status',
+        'approval_status', 'approved_by', 'approved_at',
         'total_amount', 'notes', 'fulfilled_at', 'fulfilled_by',
     ];
 
     protected $casts = [
         'total_amount' => 'decimal:2',
         'fulfilled_at' => 'datetime',
+        'approved_at' => 'datetime',
     ];
 
     public function customer(): BelongsTo
@@ -38,6 +44,11 @@ class SalesInvoice extends Model
     public function fulfiller(): BelongsTo
     {
         return $this->belongsTo(User::class, 'fulfilled_by');
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     public function items(): HasMany

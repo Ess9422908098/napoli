@@ -16,9 +16,10 @@ class RolePermissionSeeder extends Seeder
             ['slug' => 'customers.manage', 'name' => 'إدارة العملاء', 'module' => 'sales'],
             ['slug' => 'suppliers.manage', 'name' => 'إدارة الموردين', 'module' => 'purchases'],
 
-            ['slug' => 'invoices.create', 'name' => 'إنشاء فاتورة بيع', 'module' => 'sales'],
-            ['slug' => 'invoices.view', 'name' => 'عرض فواتير البيع', 'module' => 'sales'],
-            ['slug' => 'invoices.cancel', 'name' => 'إلغاء فاتورة بيع', 'module' => 'sales'],
+            ['slug' => 'invoices.create', 'name' => 'إرسال طلب فاتورة', 'module' => 'sales'],
+            ['slug' => 'invoices.view', 'name' => 'عرض طلبات الفواتير', 'module' => 'sales'],
+            ['slug' => 'invoices.cancel', 'name' => 'إلغاء طلب فاتورة', 'module' => 'sales'],
+            ['slug' => 'invoices.approve', 'name' => 'اعتماد الفاتورة من المحاسب', 'module' => 'accounting'],
 
             ['slug' => 'stock.view_readonly', 'name' => 'عرض أرصدة المخزون (قراءة فقط)', 'module' => 'inventory'],
             ['slug' => 'stock.manage', 'name' => 'إدارة حركات المخزون (وارد/صادر/جرد)', 'module' => 'inventory'],
@@ -65,7 +66,7 @@ class RolePermissionSeeder extends Seeder
                 'slug' => Role::ACCOUNTANT,
                 'name' => 'المحاسب',
                 'description' => 'رؤية القيود المالية الناتجة تلقائياً عن المبيعات والمشتريات والتصنيع والرواتب.',
-                'permissions' => ['accounting.view', 'accounting.audit', 'payroll.manage', 'stock.view_readonly', 'products.manage'],
+                'permissions' => ['accounting.view', 'accounting.audit', 'payroll.manage', 'stock.view_readonly', 'products.manage', 'invoices.approve', 'invoices.view'],
             ],
         ];
 

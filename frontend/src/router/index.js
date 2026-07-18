@@ -31,6 +31,12 @@ const routes = [
         meta: { permission: 'invoices.view' },
       },
       {
+        path: 'sales/invoices/:id',
+        name: 'sales-invoice-detail',
+        component: () => import('../views/sales/InvoiceDetailView.vue'),
+        meta: { permission: 'invoices.view' },
+      },
+      {
         path: 'stock/lookup',
         name: 'stock-lookup',
         component: () => import('../views/sales/StockLookupView.vue'),
@@ -95,6 +101,12 @@ const routes = [
         name: 'accounting-dashboard',
         component: () => import('../views/accountant/AccountingDashboardView.vue'),
         meta: { permission: 'accounting.view' },
+      },
+      {
+        path: 'accounting/invoice-approvals',
+        name: 'accounting-invoice-approvals',
+        component: () => import('../views/accountant/InvoiceApprovalsView.vue'),
+        meta: { permission: 'invoices.approve' },
       },
       {
         path: 'accounting/journal',

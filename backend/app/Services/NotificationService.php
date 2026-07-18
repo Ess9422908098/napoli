@@ -38,14 +38,26 @@ class NotificationService
         ]);
     }
 
-    /** Storekeepers must be alerted whenever a new invoice needs stock to be prepared. */
-    public function notifyStorekeepersOfNewInvoice(string $invoiceNumber, int $invoiceId): void
+    /** Accountants must be alerted whenever a new sale invoice request is created. */
+    public function notifyAccountantsOfPendingInvoice(string $invoiceNumber, int $invoiceId): void
+    {
+        $this->notifyRole(
+            Role::ACCOUNTANT,
+            'invoice_pending_approval',
+            "طلب فاتورة جديدة - فاتورة رقم {$invoiceNumber}",
+            'هناك طلب فاتورة جديد في انتظار الاعتماد.',
+            ['sales_invoice_id' => $invoiceId, 'invoice_number' => $invoiceNumber],
+        );
+    }
+
+    /** Storekeepers must be alerted whenever an approved invoice is ready to fulfill. */
+    public function notifyStorekeepersOfApprovedInvoice(string $invoiceNumber, int $invoiceId): void
     {
         $this->notifyRole(
             Role::STOREKEEPER,
-            'invoice_needs_fulfillment',
-            "طلب تجهيز جديد - فاتورة رقم {$invoiceNumber}",
-            'تم حجز الكمية المطلوبة، برجاء تجهيز الصنف وتسليمه.',
+            'invoice_ready_fulfillment',
+            "فاتورة معتمدة - فاتورة رقم {$invoiceNumber}",
+            'فاتورة معتمدة وجاهزة للتجهيز والتسليم.',
             ['sales_invoice_id' => $invoiceId, 'invoice_number' => $invoiceNumber],
         );
     }
